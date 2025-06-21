@@ -15,14 +15,22 @@ export const BUNNI_HOOKS_ADDRESS_v1_0_ON_ARBITRUM = '0x0010d0d5db05933fa0d9f7038
 export const BUNNI_HOOKS_ADDRESS_V1_1_ON_ARBITRUM = '0x0000da5dcd7ec49d6ca5554f7b1ca1ce33fa1888'
 export const BUNNI_HOOKS_ADDRESS_V1_1_1_ON_ARBITRUM = '0x0000fe59823933ac763611a69c88f91d45f81888'
 export const GRADUATION_HOOKS_ADDRESS_ON_BASE = '0xc5a48b447f01e9ce3ede71e4c1c2038c38bd9000'
+export const TWAMM_HOOKS_ADDRESS_ON_BASE = '0xed1698C29928a6C44CddB0c75aB0E5D47eB72A80'
 export const COINBASE_VERIFIED_HOOKS_ADDRESS_ON_BASE = '0x5cd525c621AFCa515Bf58631D4733fbA7B72Aae4'
 export const BTC_ACC_ON_BASE = '0x704268ac7043aeef50f47b6a03ae68ccf808e044'
 export const MEV_TAX_TEST_IN_PROD_ON_UNICHAIN = '0xb9a17e66db950e00822c2b833d6bb304c9b86080'
 
+export const WETH_HOOKS_ADDRESS_ON_OP_MAINNET = '0x480dafdb4d6092ef3217595b75784ec54b52e888'
+export const WETH_HOOKS_ADDRESS_ON_UNICHAIN = '0x730b109bad65152c67ecc94eb8b0968603dba888'
+
+// example pool: https://app.uniswap.org/explore/pools/unichain/0xeec51c6b1a9e7c4bb4fc4fa9a02fc4fff3fe94efd044f895d98b5bfbd2ff9433
+export const BUNNI_ON_UNICHAIN = '0x005aF73a245d8171A0550ffAe2631f12cc211888'
 // example pool: https://app.uniswap.org/explore/pools/unichain/0x7dbe9918ba991e7c2b078ec8ce882a060024a6126927cf66553a359e427f2f6a
 export const RENZO_ON_UNICHAIN = '0x09dea99d714a3a19378e3d80d1ad22ca46085080'
 // example pool: https://app.uniswap.org/explore/pools/unichain/0x0e3a702c43b613fe8c635e375ca4f0b8d4870526c1e6f795d379f0fb6041ed91
 export const AEGIS_ON_UNICHAIN = '0x27bfccf7fdd8215ce5dd86c2a36651d05c8450cc'
+// exmaple pool: https://app.uniswap.org/explore/pools/unichain/0x410723c1949069324d0f6013dba28829c4a0562f7c81d0f7cb79ded668691e1f
+export const UPDATED_AEGIS_ON_UNICHAIN = '0xa0b0d2d00fd544d8e0887f1a3cedd6e24baf10cc'
 
 // we do not allow v4 pools with non-zero hook address to be routed through in the initial v4 launch.
 // this is the ultimate safeguard in the routing subgraph pool cron job.
@@ -35,7 +43,7 @@ export const HOOKS_ADDRESSES_ALLOWLIST: { [chain in ChainId]: Array<string> } = 
   ],
   [ChainId.GOERLI]: [ADDRESS_ZERO],
   [ChainId.SEPOLIA]: [ADDRESS_ZERO, extraHooksAddressesOnSepolia],
-  [ChainId.OPTIMISM]: [ADDRESS_ZERO],
+  [ChainId.OPTIMISM]: [ADDRESS_ZERO, WETH_HOOKS_ADDRESS_ON_OP_MAINNET],
   [ChainId.OPTIMISM_GOERLI]: [ADDRESS_ZERO],
   [ChainId.OPTIMISM_SEPOLIA]: [ADDRESS_ZERO],
   [ChainId.ARBITRUM_ONE]: [
@@ -64,6 +72,7 @@ export const HOOKS_ADDRESSES_ALLOWLIST: { [chain in ChainId]: Array<string> } = 
     BUNNI_HOOKS_ADDRESS_V1_1_ON_ARBITRUM,
     BUNNI_HOOKS_ADDRESS_V1_1_1_ON_BASE,
     GRADUATION_HOOKS_ADDRESS_ON_BASE,
+    TWAMM_HOOKS_ADDRESS_ON_BASE,
     COINBASE_VERIFIED_HOOKS_ADDRESS_ON_BASE,
     BTC_ACC_ON_BASE,
   ],
@@ -74,7 +83,15 @@ export const HOOKS_ADDRESSES_ALLOWLIST: { [chain in ChainId]: Array<string> } = 
   [ChainId.ZKSYNC]: [ADDRESS_ZERO],
   [ChainId.WORLDCHAIN]: [ADDRESS_ZERO],
   [ChainId.UNICHAIN_SEPOLIA]: [ADDRESS_ZERO],
-  [ChainId.UNICHAIN]: [ADDRESS_ZERO, MEV_TAX_TEST_IN_PROD_ON_UNICHAIN, RENZO_ON_UNICHAIN, AEGIS_ON_UNICHAIN],
+  [ChainId.UNICHAIN]: [
+    ADDRESS_ZERO,
+    MEV_TAX_TEST_IN_PROD_ON_UNICHAIN,
+    BUNNI_ON_UNICHAIN,
+    RENZO_ON_UNICHAIN,
+    AEGIS_ON_UNICHAIN,
+    UPDATED_AEGIS_ON_UNICHAIN,
+    WETH_HOOKS_ADDRESS_ON_UNICHAIN,
+  ],
   [ChainId.MONAD_TESTNET]: [ADDRESS_ZERO],
   [ChainId.SONEIUM]: [ADDRESS_ZERO],
 }

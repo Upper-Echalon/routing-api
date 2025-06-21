@@ -273,6 +273,81 @@ const handler: ScheduledHandler = metricScope((metrics) => async (event: EventBr
           tvlUSD: 95050.95363442908526427214106054717,
         } as V4SubgraphPool,
       ]
+
+      if (chainId === ChainId.MAINNET) {
+        // https://bunni.xyz/explore/pools/ethereum/0x9148f00424c4b40a9ec4b03912f091138e9e91a60980550ed97ed7f9dc998cb5
+        manuallyIncludedV4Pools.push({
+          id: '0x9148f00424c4b40a9ec4b03912f091138e9e91a60980550ed97ed7f9dc998cb5',
+          feeTier: '1',
+          tickSpacing: '60',
+          hooks: '0x0010d0d5db05933fa0d9f7038d365e1541a41888',
+          liquidity: '173747248900',
+          token0: {
+            id: '0x0000000000000000000000000000000000000000',
+          },
+          token1: {
+            id: '0x000000c396558ffbab5ea628f39658bdf61345b3',
+          },
+          tvlETH: 73.23,
+          tvlUSD: 416830,
+        } as V4SubgraphPool)
+      }
+
+      if (chainId === ChainId.UNICHAIN) {
+        // https://bunni.xyz/explore/pools/unichain/0xeec51c6b1a9e7c4bb4fc4fa9a02fc4fff3fe94efd044f895d98b5bfbd2ff9433
+        manuallyIncludedV4Pools.push({
+          id: '0xeec51c6b1a9e7c4bb4fc4fa9a02fc4fff3fe94efd044f895d98b5bfbd2ff9433',
+          feeTier: '0',
+          tickSpacing: '1',
+          hooks: '0x005af73a245d8171a0550ffae2631f12cc211888',
+          liquidity: '173747248900',
+          token0: {
+            id: '0x078d782b760474a361dda0af3839290b0ef57ad6',
+          },
+          token1: {
+            id: '0x9151434b16b9763660705744891fa906f660ecc5',
+          },
+          tvlETH: 5371.42857143,
+          tvlUSD: 15040000,
+        } as V4SubgraphPool)
+
+        // UNICHAIN ETH/WETH: https://uniscan.xyz/tx/0x935979a7e4a1e3ea92b180009c46242b89a787fb4f2f5799bd53c675d5e0f9fd#eventlog
+        manuallyIncludedV4Pools.push({
+          id: '0xba246b8420b5aeb13e586cd7cbd32279fa7584d7f4cbc9bd356a6bb6200d16a6',
+          feeTier: '0',
+          tickSpacing: '1',
+          hooks: '0x730b109bad65152c67ecc94eb8b0968603dba888',
+          liquidity: '173747248900',
+          token0: {
+            id: '0x0000000000000000000000000000000000000000',
+          },
+          token1: {
+            id: '0x4200000000000000000000000000000000000006',
+          },
+          tvlETH: 33482,
+          tvlUSD: 60342168,
+        } as V4SubgraphPool)
+      }
+
+      if (chainId === ChainId.OPTIMISM) {
+        // OPTIMISM ETH/WETH: https://optimistic.etherscan.io/tx/0x5f81f2aa19a50a76a94a30d3d2a9540cb3cd8597c94499a50330e4b6acbef5c1#eventlog
+        manuallyIncludedV4Pools.push({
+          id: '0xbf3d38951e485c811bb1fc7025fcd1ef60c15fda4c4163458facb9bedfe26f83',
+          feeTier: '0',
+          tickSpacing: '1',
+          hooks: '0x480dafdb4d6092ef3217595b75784ec54b52e888',
+          liquidity: '173747248900',
+          token0: {
+            id: '0x0000000000000000000000000000000000000000',
+          },
+          token1: {
+            id: '0x4200000000000000000000000000000000000006',
+          },
+          tvlETH: 826,
+          tvlUSD: 1482475,
+        } as V4SubgraphPool)
+      }
+
       manuallyIncludedV4Pools.forEach((pool) => pools.push(pool))
 
       pools = v4HooksPoolsFiltering(chainId, pools as Array<V4SubgraphPool>)
