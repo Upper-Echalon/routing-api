@@ -39,6 +39,28 @@ export function v4HooksPoolsFiltering(chainId: ChainId, pools: Array<V4SubgraphP
 
       let additionalAllowedPool = 0
 
+      // OPTIMISM ETH/WETH
+      if (
+        pool.id.toLowerCase() === '0xbf3d38951e485c811bb1fc7025fcd1ef60c15fda4c4163458facb9bedfe26f83'.toLowerCase() &&
+        chainId === ChainId.OPTIMISM
+      ) {
+        pool.tvlETH = 826 // https://app.uniswap.org/explore/pools/optimism/0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b
+        pool.tvlUSD = 1482475 // https://app.uniswap.org/explore/pools/optimism/0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b
+        log.debug(`Setting tvl for OPTIMISM ETH/WETH pool ${JSON.stringify(pool)}`)
+        additionalAllowedPool += 1
+      }
+
+      // UNICHAIN ETH/WETH
+      if (
+        pool.id.toLowerCase() === '0xba246b8420b5aeb13e586cd7cbd32279fa7584d7f4cbc9bd356a6bb6200d16a6'.toLowerCase() &&
+        chainId === ChainId.UNICHAIN
+      ) {
+        pool.tvlETH = 33482 // https://app.uniswap.org/explore/pools/unichain/0x3258f413c7a88cda2fa8709a589d221a80f6574f63df5a5b6774485d8acc39d9
+        pool.tvlUSD = 60342168 // https://app.uniswap.org/explore/pools/unichain/0x3258f413c7a88cda2fa8709a589d221a80f6574f63df5a5b6774485d8acc39d9
+        log.debug(`Setting tvl for UNICHAIN ETH/WETH pool ${JSON.stringify(pool)}`)
+        additionalAllowedPool += 1
+      }
+
       // ETH/flETH
       if (
         pool.id.toLowerCase() === '0x14287e3268eb628fcebd2d8f0730b01703109e112a7a41426a556d10211d2086'.toLowerCase() &&
@@ -126,6 +148,24 @@ export function v4HooksPoolsFiltering(chainId: ChainId, pools: Array<V4SubgraphP
       ) {
         pool.tvlETH = 222 // (https://bunni.xyz/explore/pools/base/0x18851334c1315b5c92d577e50f3190e599ab6f7460b7859add5473f922c3bf54)
         pool.tvlUSD = 666666 // (https://bunni.xyz/explore/pools/base/0x18851334c1315b5c92d577e50f3190e599ab6f7460b7859add5473f922c3bf54)
+        additionalAllowedPool += 1
+      }
+
+      if (
+        pool.id.toLowerCase() === '0xeec51c6b1a9e7c4bb4fc4fa9a02fc4fff3fe94efd044f895d98b5bfbd2ff9433'.toLowerCase() &&
+        chainId === ChainId.UNICHAIN
+      ) {
+        pool.tvlETH = 2292 // (https://bunni.xyz/explore/pools/unichain/0xeec51c6b1a9e7c4bb4fc4fa9a02fc4fff3fe94efd044f895d98b5bfbd2ff9433)
+        pool.tvlUSD = 6190000 // (https://bunni.xyz/explore/pools/unichain/0xeec51c6b1a9e7c4bb4fc4fa9a02fc4fff3fe94efd044f895d98b5bfbd2ff9433)
+        additionalAllowedPool += 1
+      }
+
+      if (
+        pool.id.toLowerCase() === '0x9148f00424c4b40a9ec4b03912f091138e9e91a60980550ed97ed7f9dc998cb5'.toLowerCase() &&
+        chainId === ChainId.UNICHAIN
+      ) {
+        pool.tvlETH = 73.45 // (https://bunni.xyz/explore/pools/mainnet/0x9148f00424c4b40a9ec4b03912f091138e9e91a60980550ed97ed7f9dc998cb5)
+        pool.tvlUSD = 397080 // (https://bunni.xyz/explore/pools/mainnet/0x9148f00424c4b40a9ec4b03912f091138e9e91a60980550ed97ed7f9dc998cb5)
         additionalAllowedPool += 1
       }
 

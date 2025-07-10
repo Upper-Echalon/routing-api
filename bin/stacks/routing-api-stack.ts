@@ -20,6 +20,7 @@ import { RpcGatewayDashboardStack } from './rpc-gateway-dashboard'
 import { REQUEST_SOURCES } from '../../lib/util/requestSources'
 import { TESTNETS } from '../../lib/util/testNets'
 import { RpcGatewayFallbackStack } from './rpc-gateway-fallback-stack'
+import { chainProtocols } from '../../lib/cron/cache-config'
 
 export const CHAINS_NOT_MONITORED: ChainId[] = TESTNETS
 export const REQUEST_SOURCES_NOT_MONITORED = ['unknown']
@@ -100,7 +101,6 @@ export class RoutingAPIStack extends cdk.Stack {
       poolCacheGzipKey,
       poolCacheLambdaNameArray,
       tokenListCacheBucket,
-      ipfsPoolCachingLambda,
     } = new RoutingCachingStack(this, 'RoutingCachingStack', {
       chatbotSNSArn,
       stage,
@@ -260,7 +260,6 @@ export class RoutingAPIStack extends cdk.Stack {
       apiName: api.restApiName,
       routingLambdaName: routingLambda.functionName,
       poolCacheLambdaNameArray,
-      ipfsPoolCacheLambdaName: ipfsPoolCachingLambda ? ipfsPoolCachingLambda.functionName : undefined,
     })
 
     new RpcGatewayDashboardStack(this, 'RpcGatewayDashboardStack')
@@ -487,7 +486,7 @@ export class RoutingAPIStack extends cdk.Stack {
       const alarmName = `RoutingAPI-SEV2-SuccessRate-Alarm-ChainId: ${chainId.toString()}`
       // We only want to alert if the volume besides 400 errors is high enough over default period (5m) for 5xx errors.
       const invocationsThreshold = 50
-      const evaluationPeriods = LOW_VOLUME_CHAINS.has(chainId) ? 4 : 2
+      const evaluationPeriodsMin = LOW_VOLUME_CHAINS.has(chainId) ? 10 : 2
       const metric = new MathExpression({
         expression: `IF((invocations - response400) > ${invocationsThreshold}, 100*(response200/(invocations-response400)), 100)`,
         usingMetrics: {
@@ -519,7 +518,7 @@ export class RoutingAPIStack extends cdk.Stack {
         metric,
         comparisonOperator: ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
         threshold: 95, // This is alarm will trigger if the SR is less than or equal to 95%
-        evaluationPeriods: evaluationPeriods,
+        evaluationPeriods: evaluationPeriodsMin,
       })
       successRateByChainAlarm.push(alarm)
     })
@@ -623,6 +622,37 @@ export class RoutingAPIStack extends cdk.Stack {
       })
     })
 
+    // Alarms for subgraph metrics that trigger when no samples are received in the last 1 day
+    const subgraphAlertAlarms: cdk.aws_cloudwatch.Alarm[] = []
+
+    for (let i = 0; i < chainProtocols.length; i++) {
+      const { protocol, chainId } = chainProtocols[i]
+      const metricName = `CachePools.chain_${chainId}.${protocol}_protocol.getPools.latency`
+      const alarmName = `CachePools-SEV3-SubgraphNoData-${metricName.replace(/[^a-zA-Z0-9]/g, '_')}`
+
+      // Create a metric that represents the count of samples in the last 1 day
+      // Use a shorter period (1 hour) with more evaluation periods for more responsive detection
+      const metric = new aws_cloudwatch.Metric({
+        namespace: 'Uniswap',
+        metricName: metricName,
+        dimensionsMap: { Service: 'CachePools' },
+        unit: aws_cloudwatch.Unit.NONE,
+        statistic: 'SampleCount',
+        period: Duration.hours(1), // 1 hour period for more responsive detection
+      })
+
+      const alarm = new aws_cloudwatch.Alarm(this, alarmName, {
+        alarmName,
+        metric,
+        comparisonOperator: ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
+        threshold: 0, // Trigger when no samples (count = 0)
+        evaluationPeriods: 24, // Check 24 consecutive 1-hour periods (1 day total)
+        treatMissingData: aws_cloudwatch.TreatMissingData.BREACHING, // Missing data should trigger the alarm
+      })
+
+      subgraphAlertAlarms.push(alarm)
+    }
+
     if (chatbotSNSArn) {
       const chatBotTopic = aws_sns.Topic.fromTopicArn(this, 'ChatbotTopic', chatbotSNSArn)
       apiAlarm5xxSev2.addAlarmAction(new aws_cloudwatch_actions.SnsAction(chatBotTopic))
@@ -647,6 +677,9 @@ export class RoutingAPIStack extends cdk.Stack {
         alarm.addAlarmAction(new aws_cloudwatch_actions.SnsAction(chatBotTopic))
       })
       simulationAlarmByChainSev2.forEach((alarm) => {
+        alarm.addAlarmAction(new aws_cloudwatch_actions.SnsAction(chatBotTopic))
+      })
+      subgraphAlertAlarms.forEach((alarm) => {
         alarm.addAlarmAction(new aws_cloudwatch_actions.SnsAction(chatBotTopic))
       })
     }
